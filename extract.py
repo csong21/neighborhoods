@@ -1,9 +1,17 @@
+
+# coding: utf-8
+
+# In[3]:
+
 import re
-import csv
+
+
+# In[129]:
 
 """Extract the description of the neighborhood.""" 
-def extract_description(fhand):
-	for line in fhand:
+def extract_description(filename):
+    fhand = open(filename)
+    for line in fhand:
 		line = line.strip()
 
 		if line.startswith('<p class="p2"><span class="s1">&lt;meta name="description"'):
@@ -37,35 +45,49 @@ def extract_description(fhand):
 					m +=1
 			content = content[nth_startletter+1: nth_endletter]
 			#content.replace("&amp;#x27; ", "\'")
-			return content
+			print content
 
-def construct_dict(name, description):
-	arrond = dict(neighborhood=None, desc=None, tags=None)
-	arrond['neighborhood'] = name
-	arrond['desc'] = description
-	return arrond
+def extract_gray_tab(filename):
+    fhand = open(filename)
+    text = fhand.read()
+    gray_tab_reg = 'class="large gray btn"&gt;&lt;span class="name"&gt;([a-zA-Z ]+?)&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;</span>'
+    tag_list = re.findall(gray_tab_reg,text)
+    tag_string = ''
+    for tag in tag_list:
+        tag_string += (tag + ' ')
+    return tag_string
 
-def csv_save(arrond):
-	f = open('nyparis.csv', 'wb')
-	w = csv.DictWriter(f, arrond.keys())
-	w.writerow(arrond)
-	f.close()
-
+def extract_community_says(filename):
+    fhand = open(filename)
+    text = fhand.read()
+    community_says_reg = 'class="neighborhood-tag"&gt;([a-zA-Z ]+?)</span></p>'
+    tag_list = re.findall(community_says_reg,text)
+    tag_string = ''
+    for tag in tag_list:
+        tag_string += (tag + ' ')
+    return tag_string
+            
 def main():
-	"""neighborhoods = ['le-marais', 'quartier-latin', 
+    neighborhoods = ['le-marais', 'quartier-latin', 
 					'bastille', 'pigalle-saint-georges', 
 					'montmartre', 'opera-grands-boulevards', 
 					'champs-elysees', 'la-villette', 
 					'canal-saint-martin', 'republique', 
 					'saint-germain-des-pres-odeon', 'montparnasse',
-					'pere-lachaise-menilmontant']"""
-	neighborhoods = ['quartier-latin']
-	for neighborhood in neighborhoods:
-		print neighborhood
-		filename = '%s.txt' % neighborhood
-		fhand = open(filename)
-		description = extract_description(fhand)
-		arrond = construct_dict(neighborhood, description)
-		csv_save(arrond)
+					'pere-lachaise-menilmontant']
+    for neighborhood in neighborhoods:
+        filename = '%s.txt' % neighborhood
+        print neighborhood
+        print extract_gray_tab(filename) + extract_community_says(filename)
+        print extract_description(filename)
+
+
+# In[128]:
 
 main()
+
+
+# In[ ]:
+
+
+
