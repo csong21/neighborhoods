@@ -1,4 +1,5 @@
 import re
+import csv
 
 """Extract the description of the neighborhood.""" 
 def extract_description(fhand):
@@ -36,20 +37,35 @@ def extract_description(fhand):
 					m +=1
 			content = content[nth_startletter+1: nth_endletter]
 			#content.replace("&amp;#x27; ", "\'")
-			print content
+			return content
+
+def construct_dict(name, description):
+	arrond = dict(neighborhood=None, desc=None, tags=None)
+	arrond['neighborhood'] = name
+	arrond['desc'] = description
+	return arrond
+
+def csv_save(arrond):
+	f = open('nyparis.csv', 'wb')
+	w = csv.DictWriter(f, arrond.keys())
+	w.writerow(arrond)
+	f.close()
 
 def main():
-	neighborhoods = ['le-marais', 'quartier-latin', 
+	"""neighborhoods = ['le-marais', 'quartier-latin', 
 					'bastille', 'pigalle-saint-georges', 
 					'montmartre', 'opera-grands-boulevards', 
 					'champs-elysees', 'la-villette', 
 					'canal-saint-martin', 'republique', 
 					'saint-germain-des-pres-odeon', 'montparnasse',
-					'pere-lachaise-menilmontant']
+					'pere-lachaise-menilmontant']"""
+	neighborhoods = ['quartier-latin']
 	for neighborhood in neighborhoods:
 		print neighborhood
 		filename = '%s.txt' % neighborhood
 		fhand = open(filename)
-		extract_description(fhand)
+		description = extract_description(fhand)
+		arrond = construct_dict(neighborhood, description)
+		csv_save(arrond)
 
 main()
