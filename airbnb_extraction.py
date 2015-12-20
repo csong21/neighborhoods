@@ -67,27 +67,31 @@ def construct_dict(name, description, tags):
 	arrond['tags'] = tags
 	return arrond
 
-def csv_save(arrond):
-	f = open('nyparis.csv', 'wb')
-	w = csv.DictWriter(f, arrond.keys())
-	w.writerow(arrond)
-	f.close()
+def csv_save(arronds):
+	with open('nyparis.csv','wb') as f:
+		w = csv.writer(f)
+		w.writerow(arronds[0].keys())
+		for arrond in arronds:
+			w.writerow(arrond.values())
 
 def main():
-	"""neighborhoods = ['le-marais', 'quartier-latin', 
+	neighborhoods = ['le-marais', 'quartier-latin', 
 					'bastille', 'pigalle-saint-georges', 
 					'montmartre', 'opera-grands-boulevards', 
 					'champs-elysees', 'la-villette', 
 					'canal-saint-martin', 'republique', 
 					'saint-germain-des-pres-odeon', 'montparnasse',
-					'pere-lachaise-menilmontant']"""
-	neighborhoods = ['quartier-latin']
+					'pere-lachaise-menilmontant']
+	arronds = []
 	for neighborhood in neighborhoods:
 		print neighborhood
 		filename = '%s.txt' % neighborhood
-		description = extract_description(fhand)
+		description = extract_description(filename)
 		tags = extract_gray_tab(filename) + extract_community_says(filename)
 		arrond = construct_dict(neighborhood, description, tags)
-		csv_save(arrond)
+		arronds.append(arrond)
+	print arronds
+
+	csv_save(arronds)
 
 main()
