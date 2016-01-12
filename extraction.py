@@ -1,7 +1,5 @@
 import re
 import csv
-import os
-import glob
 
 """Extract the description of the neighborhood.""" 
 def extract_description(filename):
@@ -69,28 +67,31 @@ def construct_dict(name, description, tags):
 	arrond['tags'] = tags
 	return arrond
 
-def csv_save(arronds, csvfile):
-	with open(csvfile,'wb') as f:
+def csv_save(arronds):
+	with open('nyparis.csv','wb') as f:
 		w = csv.writer(f)
 		w.writerow(arronds[0].keys())
 		for arrond in arronds:
 			w.writerow(arrond.values())
 
 def main():
-	path = os.getcwd() #get the path at terminal when executing this file
-	city_input = raw_input('enter the city:') #to get all the neighborhood names in New York, type "new_york"; for Paris, type in "paris"
-	folderpath = '%s/data/%s'%(path, city_input) #for new york, folderpath = '/Volumes/CECELIA/ohparis/neighborhoods/data/new_york'
-	csvfile = '%s.csv'% city_input
-	arronds_row = []
-	os.chdir(folderpath)
-	arronds_city = glob.glob("*.txt")
-	for neighborhood in arronds_city:
-		filepath = '%s/%s'%(folderpath, neighborhood)
-		description = extract_description(filepath)
-		tags = extract_gray_tab(filepath) + extract_community_says(filepath)
-		arrond = construct_dict(neighborhood[:-4], description, tags) #chop off ".txt"
-		arronds_row.append(arrond)
+	neighborhoods = ['le-marais', 'quartier-latin', 
+					'bastille', 'pigalle-saint-georges', 
+					'montmartre', 'opera-grands-boulevards', 
+					'champs-elysees', 'la-villette', 
+					'canal-saint-martin', 'republique', 
+					'saint-germain-des-pres-odeon', 'montparnasse',
+					'pere-lachaise-menilmontant']
+	arronds = []
+	for neighborhood in neighborhoods:
+		print neighborhood
+		filename = '%s.txt' % neighborhood
+		description = extract_description(filename)
+		tags = extract_gray_tab(filename) + extract_community_says(filename)
+		arrond = construct_dict(neighborhood, description, tags)
+		arronds.append(arrond)
+	print arronds
 
-	csv_save(arronds_row, csvfile)
+	csv_save(arronds)
 
 main()
