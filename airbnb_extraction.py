@@ -93,4 +93,5 @@ def main():
 
 	csv_save(arronds_row, csvfile)
 
-main()
+if __name__ == '__main__':
+	main()
